@@ -1,29 +1,31 @@
-const data = require("./cleanedData.json");
+export function getNormalizedData(data) {
+  const maxGTI = Math.max(...data.map((item) => item.gti));
+  const minGTI = Math.min(...data.map((item) => item.gti));
 
-const maxGTI = Math.max(...data.map((item) => item.GTI));
-const maxEnergy = Math.max(...data.map((item) => item.Energy));
+  const maxEnergy = Math.max(...data.map((item) => item.energy));
+  const minEnergy = Math.min(...data.map((item) => item.energy));
 
-const minGTI = Math.min(...data.map((item) => item.GTI));
-const minEnergy = Math.min(...data.map((item) => item.Energy));
+  const normalizeValue = (value, min, max) => {
+    return (value - min) / (max - min);
+  };
 
-const normalizeValue = (value, min, max) => {
-  return (value - min) / (max - min);
-};
+  const normalizeTime = (time) => {
+    const date = new Date(time);
+    const hour = date.getUTCHours();
+    const dayOfYear = Math.floor(
+      (date - new Date(date.getUTCFullYear(), 0, 0)) / 86400000
+    );
+    return {
+      hour: normalizeValue(hour, 0, 23),
+      dayOfYear: normalizeValue(dayOfYear, 0, 365),
+    };
+  };
 
-const getNormalizedData = (data) => {
-  return data.map((item) => ({
-    ...item,
-    GTI: normalizeValue(item.GTI, minGTI, maxGTI),
-    Energy: normalizeValue(item.Energy, minEnergy, maxEnergy),
+  const normalizedData = data.map((item) => ({
+    time: normalizeTime(item.time),
+    gti: normalizeValue(item.gti, minGTI, maxGTI),
+    energy: normalizeValue(item.energy, minEnergy, maxEnergy),
   }));
-};
 
-const normalizedData = getNormalizedData(data);
-
-// Saves the normalized data to a file
-const fs = require("fs");
-fs.writeFileSync(
-  "normalizedData.json",
-  JSON.stringify(normalizedData, null, 2)
-);
-console.log("Normalized data saved to normalizedData.json");
+  return { normalizedData, minGTI, maxGTI, minEnergy, maxEnergy };
+}

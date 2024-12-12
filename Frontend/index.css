@@ -1,0 +1,47 @@
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 200px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+  height: 100vh;
+  margin: 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif, sans-serif;
+}
+
+header {
+  grid-area: header;
+  background-color: #4caf50;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+aside {
+  grid-area: sidebar;
+  background-color: #f4f4f4;
+  padding: 1rem;
+}
+
+main {
+  grid-area: main;
+  background-color: #fff;
+  padding: 1rem;
+}
+
+footer {
+  grid-area: footer;
+  background-color: #4caf50;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+#predictionForm {
+  display: grid;
+  grid-template-columns: 0.2fr;
+  gap: 1rem;
+}

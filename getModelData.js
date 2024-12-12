@@ -1,6 +1,6 @@
-const fs = require("fs");
-const generateScenarios = require("./generateScenarios.js");
-const fetchWeatherData = require("./getHistoricalWeatherData.js");
+import fs from "fs";
+import { generateScenarios } from "./generateScenarios.js";
+import { fetchWeatherData } from "./getHistoricalWeatherData.js";
 
 const getModelData = async () => {
   let data = [];

@@ -1,4 +1,4 @@
-const generateScenarios = () => {
+export const generateScenarios = () => {
   const dates = [
     { start: "2023-03-21", end: "2023-03-22" }, // Vårdagjämning
     { start: "2023-06-21", end: "2023-06-22" }, // Sommarsolstånd
@@ -17,5 +17,3 @@ const generateScenarios = () => {
 
   return scenarios;
 };
-
-module.exports = generateScenarios;

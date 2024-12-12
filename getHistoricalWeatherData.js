@@ -1,6 +1,6 @@
-const { fetchWeatherApi } = require("openmeteo");
+import { fetchWeatherApi } from "openmeteo";
 
-const fetchWeatherData = async (scenario) => {
+export const fetchWeatherData = async (scenario) => {
   const params = {
     latitude: 58.41488839788278,
     longitude: 13.835380630207675,
@@ -65,14 +65,14 @@ const fetchWeatherData = async (scenario) => {
       );
       mlData.push({
         time: weatherData.hourly.time[i].toISOString(),
-        GTI: 0,
-        Energy: A * 0 * eta * 1,
+        gti: 0,
+        energy: A * 0 * eta * 1,
       });
     } else {
       mlData.push({
         time: weatherData.hourly.time[i].toISOString(),
-        GTI: Gt,
-        Energy: A * Gt * eta * 1,
+        gti: Gt,
+        energy: A * Gt * eta * 1,
       });
     }
   }
@@ -83,5 +83,3 @@ const fetchWeatherData = async (scenario) => {
 // Helper function to form time ranges
 const range = (start, stop, step) =>
   Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
-
-module.exports = fetchWeatherData;
