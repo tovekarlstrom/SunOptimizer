@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import generatePrediction from "./components/generatePrediction";
 import "./App.css";
@@ -6,16 +6,22 @@ import { trainModel } from "./model/predictionModel";
 
 function App() {
   const [data, setData] = useState([]);
+  const [error, setError] = useState(false);
+  const [training, setTraining] = useState(null);
+
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     const prediction = await generatePrediction(data.date);
-    setData(prediction);
+    const allZero = prediction.every((item) => item.prediction === 0);
+    if (allZero) {
+      setError(true);
+      setData([]);
+    } else {
+      setError(false);
+      setData(prediction);
+    }
   };
-
-  useEffect(() => {
-    console.log("Data:", data);
-  }, []);
 
   return (
     <div className="App">
@@ -47,19 +53,37 @@ function App() {
           with additional sources and expert opinions.
         </p>
         <button
-          onClick={() => {
-            trainModel();
+          style={{
+            width: "200px",
+            height: "50px",
+            borderStyle: "none",
+            backgroundColor: "darkGreen",
+            color: "white",
+            fontSize: "20px",
+            fontWeight: "bold",
+            borderRadius: "10px",
+          }}
+          disabled={training}
+          onClick={async () => {
+            setTraining(true);
+            setTraining(await trainModel());
             console.log("Initiating training");
           }}
         >
           Train Model
         </button>
-        <form id="predictionForm" onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="date">Insert your timespan</label>
-          <input id="date" type="date" name="date" {...register("date")} />
-          <button type="submit">Generate prediction</button>
-        </form>
-        {data.length > 0 && (
+        {training !== null ? (
+          training ? (
+            <p>Training model...</p>
+          ) : (
+            <form id="predictionForm" onSubmit={handleSubmit(onSubmit)}>
+              <label htmlFor="date">Insert your timespan</label>
+              <input id="date" type="date" name="date" {...register("date")} />
+              <button type="submit">Generate prediction</button>
+            </form>
+          )
+        ) : null}
+        {data.length > 0 || !error ? (
           <div>
             <h3>Results</h3>
             <div>
@@ -88,6 +112,8 @@ function App() {
               </table>
             </div>
           </div>
+        ) : (
+          <p>An error accourd training the model, please try again.</p>
         )}
       </main>
       <footer>

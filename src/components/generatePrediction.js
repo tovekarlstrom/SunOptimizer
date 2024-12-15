@@ -1,12 +1,8 @@
 import { fetchWeatherApi } from "openmeteo";
-import Chart from "chart.js/auto";
 import * as tf from "@tensorflow/tfjs";
-import cleanData from "./cleanedData.json";
 import getNormalizedData from "./normalizeData";
 import model from "../model/predictionModel";
 export default async function generatePrediction(date) {
-  console.log("Selected date:", date);
-
   const params = {
     latitude: 52.52,
     longitude: 13.41,
@@ -16,7 +12,6 @@ export default async function generatePrediction(date) {
   };
   const url = "https://api.open-meteo.com/v1/forecast";
   try {
-    console.log("params", params);
     const responses = await fetchWeatherApi(url, params);
 
     // Helper function to form time ranges
@@ -60,22 +55,16 @@ export default async function generatePrediction(date) {
     const { normalizedData: normalizedActualValues } =
       getNormalizedData(actualValues);
 
-    console.log("ac", actualValues);
-    // const maxEnergy = Math.max(...cleanData.map((item) => item.energy));
-    // const minEnergy = Math.min(...cleanData.map((item) => item.energy));
     const { normalizedData } = getNormalizedData(rawData);
-    console.log("normalizedData", normalizedData);
-    console.log("normalizedActualValues", normalizedActualValues);
 
     const modelData = normalizedData.map((item) => [
       item.time.hour,
       item.time.dayOfYear,
       item.gti,
     ]);
-    // Skapa en tensor med rätt form
+
     const inputTensor = tf.tensor2d(modelData);
 
-    // Skicka den normaliserade datan till modellen för att göra förutsägelser
     const prediction = model.predict(inputTensor);
     const predictionArray = await prediction.array();
     console.log("Prediction:", predictionArray);

@@ -1,8 +1,9 @@
 import * as tf from "@tensorflow/tfjs";
 import getNormalizedData from "../components/normalizeData.js";
 import data from "../components/cleanedData.json";
-// Shuffle the data
+// Normalize the data
 const { normalizedData } = getNormalizedData(data);
+// Shuffle the data
 const shuffledData = normalizedData.sort(() => Math.random() - 0.5);
 
 // Split the data into training and testing sets
@@ -20,13 +21,15 @@ const testData = shuffledData
   .slice(splitIndex)
   .map((item) => [item.time.hour, item.time.dayOfYear, item.gti]);
 const testLabels = shuffledData.slice(splitIndex).map((item) => [item.energy]);
-//byt namn från lables till output
+
+// Convert data to tensors
 const trainingDataTensor = tf.tensor2d(trainingData);
 const trainingOutputTensor = tf.tensor2d(trainingLabels);
 
 const testDataTensor = tf.tensor2d(testData);
 const testLabelsTensor = tf.tensor2d(testLabels);
 
+// Create the model
 const model = tf.sequential();
 model.add(tf.layers.dense({ units: 10, activation: "relu", inputShape: [3] }));
 model.add(tf.layers.dense({ units: 1 }));
@@ -36,6 +39,7 @@ model.compile({
 });
 
 export const trainModel = async () => {
+  // Train the model
   await model.fit(trainingDataTensor, trainingOutputTensor, {
     epochs: 500,
     batchSize: 32,
@@ -70,6 +74,7 @@ export const trainModel = async () => {
     }, 0) / predictionsArray.length
   );
   console.log("Root Mean Squared Error (RMSE):", rmse);
+  return false;
 };
 
 export default model;
